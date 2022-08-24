@@ -78,8 +78,4 @@ public class AdminController {
         return "userWoRole";
     }
 
-  //  @GetMapping("/login")
-  //  public String loginPage() {
-  //      return "login";
-  //  }
 }

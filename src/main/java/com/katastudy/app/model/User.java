@@ -25,7 +25,9 @@ public class User implements UserDetails {
     private int age;
     @Transient
     private String passwordConfirm;
-    @ManyToMany(fetch = FetchType.EAGER)
+
+    @Transient
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "id")
     private Set<Role> roles;
 
     public User() {

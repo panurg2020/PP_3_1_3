@@ -1,11 +1,8 @@
 package com.katastudy.app.configs;
 
-import com.katastudy.app.model.Role;
-import com.katastudy.app.model.User;
 import com.katastudy.app.service.RoleServiceImpl;
 import com.katastudy.app.service.UserDetailsServiceImpl;
 import com.katastudy.app.service.UserServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -16,23 +13,25 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.core.GrantedAuthorityDefaults;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import javax.annotation.PostConstruct;
-
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Autowired
-    private UserDetailsServiceImpl userDetailsService;
+    private final UserDetailsServiceImpl userDetailsService;
 
-    @Autowired
-    private UserServiceImpl userService;
+    private final UserServiceImpl userService;
 
-    @Autowired
-    private RoleServiceImpl roleService;
+    private final RoleServiceImpl roleService;
 
-    @Autowired
-    private SuccessUserHandler successUserHandler;
+    private final SuccessUserHandler successUserHandler;
+
+    public WebSecurityConfig (UserDetailsServiceImpl userDetailsService, UserServiceImpl userService, RoleServiceImpl roleService, SuccessUserHandler successUserHandler) {
+
+        this.successUserHandler = successUserHandler;
+        this.roleService = roleService;
+        this.userService = userService;
+        this.userDetailsService = userDetailsService;
+    }
 
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
@@ -45,7 +44,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/admin/**").hasAnyRole("ADMIN")
                 .antMatchers("/user/**").hasAnyRole("USER", "ADMIN")
-                .antMatchers("/userNotRole/**").not().hasAnyRole("USER", "ADMIN")
+                .antMatchers("/userWoRole/**").not().hasAnyRole("USER", "ADMIN")
                 .antMatchers("/", "/index").permitAll()
                 .anyRequest().authenticated()
                 .and()
@@ -67,13 +66,4 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     GrantedAuthorityDefaults grantedAuthorityDefaults() {
         return new GrantedAuthorityDefaults("");
     }
-
-  //  @Bean
-  //  @PostConstruct
-  //  public void addRoles() {
-   //     roleService.addRole(new Role(1L, "USER"));
-   //     roleService.addRole(new Role(2L, "ADMIN"));
-    //    User user = new User("admin@mail.ru", "admin", "Иван", "Иванов", 20, roleService.getAllRoles());
-   //     userService.saveUser(user);
-   // }
 }
