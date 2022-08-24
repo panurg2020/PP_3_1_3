@@ -67,15 +67,4 @@ public class AdminController {
         model.addAttribute("allRoles", roleService.getAllRoles());
         return "newUser";
     }
-
-    @GetMapping("/user")
-    public String infoUser() {
-        return "/user";
-    }
-
-    @GetMapping("/userWoRole")
-    public String infoUserWoRole() {
-        return "userWoRole";
-    }
-
 }
