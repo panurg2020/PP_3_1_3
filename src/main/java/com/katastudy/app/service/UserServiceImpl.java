@@ -25,6 +25,11 @@ public class UserServiceImpl implements UserService {
         return userFromDb.orElse(new User());
     }
 
+    public User getUserByName(String email) {
+
+        return userRepository.findByEmail(email);
+    }
+
     public List<User> allUsers() {
         return userRepository.findAll();
     }
@@ -51,7 +56,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     public boolean edit(User user) {
-        User userFromDB = userRepository.findByEmail(user.getEmail());
+        User userFromDB = userRepository.findByEmail(user.getName());
         if ((userFromDB != null) && (userFromDB.getId() != user.getId())) {
             return false;
         }

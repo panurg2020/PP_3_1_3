@@ -6,6 +6,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -14,7 +15,7 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "email")
+    @Column(name = "email", unique = true)
     private String email;
     @Column(name = "password")
     private String password;
@@ -26,15 +27,14 @@ public class User implements UserDetails {
     private int age;
     @Transient
     private String passwordConfirm;
-    @Transient
+
     @ManyToMany(fetch = FetchType.LAZY)
-    @Cascade(value = org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @JoinTable(
             name = "users_roles",
-            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "roles_id", referencedColumnName = "id"),
-            uniqueConstraints = { @UniqueConstraint(columnNames = {"user_id", "roles_id" }) })
-    private Set<Role> roles;
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "roles_id")
+    )
+    private Set<Role> roles = new HashSet<>();
 
     public User() {
     }
