@@ -2,22 +2,36 @@ package com.katastudy.app.service;
 
 import com.katastudy.app.repository.UserRepository;
 import com.katastudy.app.model.User;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.*;
 
 @Service
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder(8);
 
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
-
-    public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
+    @Autowired
+    public UserServiceImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        User user = userRepository.findByEmail(email);
+        if (user == null) {
+            throw new UsernameNotFoundException(String.format("User not found"));
+        }
+        return user;
+    }
+
+    @Override
+    public User findByUsername(String email) {
+        return userRepository.findByEmail(email);
     }
 
     public User findUserById(Long userId) {
@@ -25,43 +39,33 @@ public class UserServiceImpl implements UserService {
         return userFromDb.orElse(new User());
     }
 
-    public User getUserByName(String email) {
-
-        return userRepository.findByEmail(email);
-    }
-
     public List<User> allUsers() {
         return userRepository.findAll();
     }
 
-    @Transactional
-    public boolean saveUser(User user) {
-        User userFromDB = userRepository.findByEmail(user.getEmail());
-        if (userFromDB != null) {
-            return false;
-        }
+    @Override
+    public User saveUser(User user) {
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-        userRepository.save(user);
-        return true;
+        return userRepository.save(user);
     }
 
-    @Transactional
-    public boolean deleteUser(Long userId) {
-        if (userRepository.findById(userId).isPresent()) {
-            userRepository.deleteById(userId);
-            return true;
-        }
-        return false;
+    @Override
+    public void deleteUser(Long id) {
+        User anotherUser = userRepository.findById(id).orElseThrow(
+                ()-> new RuntimeException("Пользователь не найден"));
+        userRepository.delete(anotherUser);
     }
 
-    @Transactional
-    public boolean edit(User user) {
-        User userFromDB = userRepository.findByEmail(user.getName());
-        if ((userFromDB != null) && (userFromDB.getId() != user.getId())) {
-            return false;
-        }
-        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-        userRepository.save(user);
-        return true;
+    //orElseThrow - это метод, который возвращает значение, если оно присутствует, в противном случае вызывает исключение.
+    @Override
+    public User edit(User user, Long id) {
+        User anotherUser = userRepository.findById(id).orElseThrow(
+                ()-> new RuntimeException("Пользователь не найден"));
+        anotherUser.setName(user.getName());
+        anotherUser.setSurname(user.getSurname());
+        anotherUser.setAge(user.getAge());
+        anotherUser.setEmail(user.getEmail());
+        anotherUser.setRoles(user.getRoles());
+        return userRepository.save(anotherUser);
     }
 }

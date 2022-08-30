@@ -5,7 +5,7 @@
       <element id="javaee-facet-resources" facet="PP_3_1_3/web/Web" />
       <element id="directory" name="WEB-INF">
         <element id="directory" name="classes">
-          <element id="module-output" name="PP_3_1_3" />
+          <element id="module-output" name="PP_3_1_4" />
         </element>
       </element>
     </root>
