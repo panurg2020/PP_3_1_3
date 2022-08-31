@@ -1,5 +1,6 @@
 package com.katastudy.app.service;
 
+import com.katastudy.app.model.User;
 import com.katastudy.app.repository.RoleRepository;
 import org.springframework.stereotype.Service;
 import com.katastudy.app.model.Role;
@@ -26,11 +27,9 @@ public class RoleServiceImpl implements RoleService{
     }
 
     @Override
-    public Set<Role> getAllRoles(long [] ides) {
+    public Set<Role> getAllRoles(User user) {
         Set <Role> roles = new HashSet<>();
-        for (int i = 0; i < ides.length; i++) {
-            roles.add(roleRepository.getById(ides[i]));
-        }
+        user.getRoles().forEach(r -> roles.add(getById(r.getId())));
         return roles;
     }
 }

@@ -14,11 +14,13 @@ public class AdminRestController {
 
     private final UserService userService;
 
-    public AdminRestController(UserService userService) {this.userService = userService;}
+    public AdminRestController(UserService userService) {
+        this.userService = userService;
+    }
 
     @GetMapping()
-    public List<User> getAll() {
-        return userService.allUsers();
+    public ResponseEntity<List<User>> getAll() {
+        return ResponseEntity.ok(userService.allUsers());
     }
 
     @GetMapping("/{id}")

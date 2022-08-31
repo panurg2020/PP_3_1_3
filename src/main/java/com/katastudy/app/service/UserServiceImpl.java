@@ -56,16 +56,10 @@ public class UserServiceImpl implements UserService {
         userRepository.delete(anotherUser);
     }
 
-    //orElseThrow - это метод, который возвращает значение, если оно присутствует, в противном случае вызывает исключение.
     @Override
     public User edit(User user, Long id) {
         User anotherUser = userRepository.findById(id).orElseThrow(
                 ()-> new RuntimeException("Пользователь не найден"));
-        anotherUser.setName(user.getName());
-        anotherUser.setSurname(user.getSurname());
-        anotherUser.setAge(user.getAge());
-        anotherUser.setEmail(user.getEmail());
-        anotherUser.setRoles(user.getRoles());
         return userRepository.save(anotherUser);
     }
 }
