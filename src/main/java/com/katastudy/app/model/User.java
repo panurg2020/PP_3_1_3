@@ -2,12 +2,16 @@ package com.katastudy.app.model;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
+import javax.transaction.Transactional;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+
+import static org.hibernate.annotations.FetchMode.JOIN;
 
 @Entity
 @Table(name = "users")
@@ -42,6 +46,7 @@ public class User implements UserDetails {
     }
 
     @ManyToMany(fetch = FetchType.LAZY)
+    @Fetch(JOIN)
     @JoinTable(name = "users_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "roles_id"))
@@ -101,6 +106,7 @@ public class User implements UserDetails {
     public String getPassword() {
         return password;
     }
+    @Bean
     public void setPassword(String password) {
         this.password = password;
     }

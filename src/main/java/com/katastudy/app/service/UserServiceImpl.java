@@ -5,7 +5,7 @@ import com.katastudy.app.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.*;
 
@@ -13,7 +13,8 @@ import java.util.*;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder(8);
+
+    PasswordEncoder bCryptPasswordEncoder;
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository) {
@@ -52,14 +53,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(Long id) {
         User anotherUser = userRepository.findById(id).orElseThrow(
-                ()-> new RuntimeException("Пользователь не найден"));
+                ()-> new RuntimeException("User not found"));
         userRepository.delete(anotherUser);
     }
 
     @Override
     public User edit(User user, Long id) {
         User anotherUser = userRepository.findById(id).orElseThrow(
-                ()-> new RuntimeException("Пользователь не найден"));
+                ()-> new RuntimeException("User not found"));
         return userRepository.save(anotherUser);
     }
 }
